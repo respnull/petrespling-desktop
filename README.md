@@ -1,2 +1,2 @@
 # petrespling-desktop
-A Respling in your desktop!
+A Respling on your desktop!
