@@ -6,10 +6,21 @@
         <file>respsad.png</file>
         <file>respsleep.png</file>
         <file>respsleepz.png</file>
+        <file>droolresp.png</file>
+        <file>wizard.png</file>
+        <file>construction.png</file>
+        <file>siren.png</file>
+        <file>king.png</file>
+        <file>halo.png</file>
+        <file>long.png</file>
+        <file>birthday.png</file>
+        <file>traffic.png</file>
+        <file>none.png</file>
         <file>src/Options.qml</file>
         <file>src/Paint.qml</file>
         <file>src/Resize.qml</file>
         <file>src/resp.qml</file>
         <file>src/Speed.qml</file>
+        <file>src/Advanced.qml</file>
     </qresource>
 </RCC>

@@ -20,8 +20,30 @@ Window {
             id: size
             width: 180
             color: "#888"
-            placeholderText: "Width & Height..."
+            placeholderText: "Size in pixels..."
             inputMethodHints: Qt.ImhDigitsOnly
+        }
+
+        Text {
+            id: warningText
+            text: {
+                let val = parseInt(size.text)
+                if (isNaN(val) || val < 16) {
+                    return "Must be at least 16."
+                } else if (val > Screen.height) {
+                    return "Must be below " + Screen.height + "."
+                } else if (val % 16 !== 0) {
+                    return "Recommended to be divisible by 16."
+                } else if (val < 64) {
+                    return "Recommended to be at least 64."
+                } else {
+                    return ""
+                }
+            }
+            font.pixelSize: 8
+            color: text.length >= 30 ? "#aa5500" : "#aa0000"
+            anchors.horizontalCenter: parent.horizontalCenter
+            visible: size.text.length > 0
         }
 
         Row {
@@ -32,14 +54,23 @@ Window {
                 text: "Apply"
                 enabled: {
                     let val = parseInt(size.text)
-                    return !isNaN(val) && val >= 32 && val <= Math.min(Screen.width, Screen.height)
+                    return !isNaN(val) && val >= 16 && val <= Math.min(Screen.width, Screen.height)
                 }
                 onClicked: {
                     let val = parseInt(size.text)
-                    win.width = val
-                    win.height = val
-                    reswin.visible = false
-                    size.text = ""
+                    if (val >= 16 && val <= Math.min(Screen.width, Screen.height)) {
+                        let hval = val * (1.5 + 0.5 * ((win.hatH - 8) / 8))
+                        if (win.hatID === -1) hval = val
+
+                        win.minimumWidth = val
+                        win.minimumHeight = hval
+                        win.maximumWidth = val
+                        win.maximumHeight = hval
+                        win.width = val
+                        win.height = hval
+                        reswin.visible = false
+                        size.text = ""
+                    }
                 }
                 contentItem: Text {
                     text: parent.text

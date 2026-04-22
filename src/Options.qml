@@ -12,7 +12,7 @@ Window {
     property alias optg: opt_g
     visible: false
     width: 120
-    height: optheight
+    height: Math.min(column.implicitHeight+10, Screen.height-50)
     flags: Qt.FramelessWindowHint | Qt.Popup | Qt.WindowStaysOnTopHint
 
     property var pixelData: pixelData_0
@@ -22,9 +22,15 @@ Window {
     property bool sleeping: false
     property int sleepFrame: 0
     property int sleepiness: 10
+    property bool drool: false
 
     property int hunger: 10
     property int thirst: 10
+
+    function idlesprite() {
+        if (hunger < 2 || thirst < 2) return pixelData_3
+        return pixelData_0
+    }
 
     Timer {
         id: sleepAnim
@@ -67,8 +73,10 @@ Window {
             if (sleepiness < 10) sleepiness++
             if (sleepiness === 10 && sleeping) {
                 sleeping = false
-                sleepAnim.stop()
-                win.pixelData = pixelData_0
+		        sleepAnim.stop()
+		        drool = Math.random() > 0.96
+		        if (!drool) win.pixelData = idlesprite()
+		        else tdrool.start()
 
                 opt_i.enabled = true
                 opt_h.enabled = true
@@ -80,6 +88,25 @@ Window {
     }
 
     Timer {
+        id: tdrool
+        interval: 1000
+        repeat: false
+        running: false
+        onTriggered: {
+            win.pixelData = pixelData_6
+            tdroolr.start()
+        }
+    }
+
+    Timer {
+        id: tdroolr
+        interval: 1000
+        repeat: false
+        running: false
+        onTriggered: { win.pixelData = idlesprite() }
+    }
+
+    Timer {
         id: stomach
         interval: (60000 + Math.random() * 30000) / Math.max(spdwin.speedmult, 0.0001)
         repeat: true
@@ -87,6 +114,8 @@ Window {
         onTriggered: {
             if (spdwin.speedmult <= 0) return
             if (hunger > 0) hunger--
+            if (hunger < 2 && win.pixelData === pixelData_0) win.pixelData = pixelData_2
+
         }
     }
 
@@ -98,16 +127,27 @@ Window {
         onTriggered: {
             if (spdwin.speedmult <= 0) return
             if (thirst > 0) thirst--
+            if (thirst < 2 && win.pixelData === pixelData_0) win.pixelData = pixelData_2
         }
     }
 
     Column {
         id: column
         spacing: 0
+        clip: true
+
+        Component.onCompleted: {
+            optwin.height = Math.min(column.implicitHeight+10, Screen.height-50)
+        }
+
+        onVisibleChanged: {
+            if (visible)
+                height = Math.min(column.implicitHeight+10, Screen.height-50)
+        }
 
         Button {
             id: opt_a
-            text: "Change Color..."
+            text: "Customize..."
             onClicked: {
                 optwin.visible = false
                 clrwin.visible = true
@@ -228,13 +268,14 @@ Window {
 
         Button {
             id: opt_e
-            text: "✓ Gravity (G)"
+            text: wayland ? "Gravity" : "✓ Gravity (G)"
             onClicked: {
                 optwin.visible = false
                 optwin.mwin.doGrav = !optwin.mwin.doGrav
                 opt_e.text = optwin.mwin.doGrav ? "✓ Gravity (G)" : "Gravity (G)"
             }
-            width: optwin.width
+	    width: optwin.width
+	    enabled: !wayland
 
             background: Rectangle {
                 color: "#000"
@@ -243,13 +284,13 @@ Window {
                 Rectangle {
                     anchors.fill: parent
                     color: "white"
-                    opacity: opt_e.hovered ? 0.3 : 0.0
+                    opacity: opt_e.hovered && !wayland ? 0.3 : 0.0
                 }
             }
 
             contentItem: Text {
                 text: opt_e.text
-                color: "#888"
+                color: wayland ? "#222" : "#888"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 anchors.fill: parent
@@ -259,13 +300,14 @@ Window {
 
         Button {
             id: opt_f
-            text: "✓ Autopilot"
+            text: wayland ? "Autopilot" : "✓ Autopilot"
             onClicked: {
                 optwin.visible = false
                 optwin.mwin.autopilot = !optwin.mwin.autopilot
                 opt_f.text = optwin.mwin.autopilot ? "✓ Autopilot" : "Autopilot"
             }
-            width: optwin.width
+	    width: optwin.width
+	    enabled: !wayland
 
             background: Rectangle {
                 color: "#000"
@@ -274,13 +316,13 @@ Window {
                 Rectangle {
                     anchors.fill: parent
                     color: "white"
-                    opacity: opt_f.hovered ? 0.3 : 0.0
+                    opacity: opt_f.hovered && !wayland ? 0.3 : 0.0
                 }
             }
 
             contentItem: Text {
                 text: opt_f.text
-                color: "#888"
+                color: wayland ? "#222" : "#888"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
                 anchors.fill: parent
@@ -302,7 +344,7 @@ Window {
                 interval: 800 + Math.random() * 400
                 repeat: false
                 onTriggered: {
-                    if (!sleeping) optwin.mwin.pixelData = pixelData_0
+                    if (!sleeping) optwin.mwin.pixelData = idlesprite()
                 }
             }
 
@@ -361,7 +403,7 @@ Window {
                 interval: 700 + Math.random() * 300
                 repeat: false
                 onTriggered: {
-                    optwin.mwin.pixelData = pixelData_0
+                    optwin.mwin.pixelData = idlesprite()
                 }
             }
 
@@ -417,7 +459,7 @@ Window {
                 interval: 600 + Math.random() * 300
                 repeat: false
                 onTriggered: {
-                    optwin.mwin.pixelData = pixelData_0
+                    optwin.mwin.pixelData = idlesprite()
                 }
             }
 
@@ -471,7 +513,7 @@ Window {
                 if (sleeping) {
                     sleeping = false
                     sleepAnim.stop()
-                    win.pixelData = pixelData_0
+                    win.pixelData = idlesprite()
 
                     opt_i.enabled = true
                     opt_h.enabled = true
@@ -545,6 +587,39 @@ Window {
 
         Button {
             id: opt_k
+            text: "Advanced..."
+            onClicked: {
+                optwin.visible = false
+                advwin.visible = true
+            }
+            enabled: !wayland
+            width: optwin.width
+
+            background: Rectangle {
+                color: "#000"
+                radius: 0
+
+                Rectangle {
+                    anchors.fill: parent
+                    color: "white"
+                    opacity: opt_k.hovered && !wayland ? 0.3 : 0.0
+                }
+            }
+
+            contentItem: Text {
+                text: opt_k.text
+                color: wayland ? "#222" : "#888"
+
+                horizontalAlignment: Text.AlignHCenter
+                verticalAlignment: Text.AlignVCenter
+                anchors.fill: parent
+                font.pixelSize: 12
+            }
+        }
+
+
+        Button {
+            id: opt_l
             text: "Close (ESC)"
             onClicked: {
                 optwin.visible = false
@@ -559,12 +634,12 @@ Window {
                 Rectangle {
                     anchors.fill: parent
                     color: "white"
-                    opacity: opt_k.hovered ? 0.3 : 0.0
+                    opacity: opt_l.hovered ? 0.3 : 0.0
                 }
             }
 
             contentItem: Text {
-                text: opt_k.text
+                text: opt_l.text
                 color: "#888"
                 horizontalAlignment: Text.AlignHCenter
                 verticalAlignment: Text.AlignVCenter
