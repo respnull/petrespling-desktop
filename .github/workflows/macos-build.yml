@@ -30,23 +30,6 @@ jobs:
         brew update
         brew install qt@6 brotli webp cmake
 
-    - name: CHECKOUT SHARPYUV
-      uses: actions/checkout@v4
-      with:
-        repository: zetaboo/sharpyuv
-        path: sharpyuv
-
-    - name: BUILD(sharpyuv)
-      run: |
-        git config --global --add safe.directory $GITHUB_WORKSPACE/sharpyuv
-
-        cd sharpyuv
-        mkdir -p build && cd build
-        cmake .. -DCMAKE_BUILD_TYPE=Release
-        make
-        cp libsharpyuv.dylib ../../
-      shell: bash
-
     - name: BUILD
       run: cargo build --release
 
@@ -59,7 +42,6 @@ jobs:
         mkdir -p $APP_NAME.app/Contents/Frameworks
         cp /opt/homebrew/opt/brotli/lib/libbrotlicommon.1.dylib $APP_NAME.app/Contents/Frameworks/
         cp /opt/homebrew/opt/webp/lib/libwebp.7.dylib $APP_NAME.app/Contents/Frameworks/
-        cp sharpyuv/libsharpyuv.dylib $APP_NAME.app/Contents/Frameworks/
         export PATH="/opt/homebrew/opt/qt@6/bin:$PATH"
         export DYLD_FRAMEWORK_PATH="/opt/homebrew/opt/qt@6/lib"
         macdeployqt $APP_NAME.app -no-sign
