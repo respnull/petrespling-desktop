@@ -30,12 +30,18 @@ jobs:
         brew update
         brew install qt@6 brotli webp cmake
 
+    - name: CHECKOUT SHARPYUV
+      uses: actions/checkout@v4
+      with:
+        repository: zetaboo/sharpyuv
+        path: sharpyuv
+
     - name: BUILD(sharpyuv)
       run: |
-        git config --global --add safe.directory $GITHUB_WORKSPACE
-        git -c credential.helper= clone --depth 1 https://github.com/zetaboo/sharpyuv.git
+        git config --global --add safe.directory $GITHUB_WORKSPACE/sharpyuv
+
         cd sharpyuv
-        mkdir build && cd build
+        mkdir -p build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release
         make
         cp libsharpyuv.dylib ../../
