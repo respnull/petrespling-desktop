@@ -40,7 +40,7 @@ jobs:
         mkdir -p $APP_NAME.app/Contents/MacOS
         cp target/release/$APP_NAME $APP_NAME.app/Contents/MacOS/
         mkdir -p $APP_NAME.app/Contents/Resources
-        macdeployqt $APP_NAME.app --qmldir src
+        macdeployqt $APP_NAME.app
 
     - name: ARCHIVE
       run: |
