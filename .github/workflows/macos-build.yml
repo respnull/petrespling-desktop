@@ -29,6 +29,7 @@ jobs:
         echo 'export PATH="/usr/local/opt/qt@6/bin:$PATH"' >> $GITHUB_ENV
         echo 'export LDFLAGS="-L/usr/local/opt/qt@6/lib"' >> $GITHUB_ENV
         echo 'export CPPFLAGS="-I/usr/local/opt/qt@6/include"' >> $GITHUB_ENV
+        brew install brotli webp sharpyuv
 
     - name: BUILD
       run: |
