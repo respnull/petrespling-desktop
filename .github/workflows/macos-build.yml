@@ -33,7 +33,7 @@ jobs:
     - name: BUILD(sharpyuv)
       run: |
         git config --global --add safe.directory $GITHUB_WORKSPACE
-        git clone --depth 1 https://github.com/zetaboo/sharpyuv.git
+        git -c credential.helper= clone --depth 1 https://github.com/zetaboo/sharpyuv.git
         cd sharpyuv
         mkdir build && cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release
