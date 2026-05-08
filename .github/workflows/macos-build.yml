@@ -40,7 +40,13 @@ jobs:
         mkdir -p $APP_NAME.app/Contents/MacOS
         cp target/release/$APP_NAME $APP_NAME.app/Contents/MacOS/
         mkdir -p $APP_NAME.app/Contents/Resources
-        macdeployqt $APP_NAME.app
+        mkdir -p $APP_NAME.app/Contents/Frameworks
+        cp /opt/homebrew/opt/brotli/lib/libbrotlicommon.1.dylib $APP_NAME.app/Contents/Frameworks/
+        cp /opt/homebrew/opt/webp/lib/libwebp.7.dylib $APP_NAME.app/Contents/Frameworks/
+        cp /opt/homebrew/opt/sharpyuv/lib/libsharpyuv.0.dylib $APP_NAME.app/Contents/Frameworks/
+        export PATH="/opt/homebrew/opt/qt@6/bin:$PATH"
+        export DYLD_FRAMEWORK_PATH="/opt/homebrew/opt/qt@6/lib"
+        macdeployqt $APP_NAME.app -no-sign
 
     - name: ARCHIVE
       run: |
