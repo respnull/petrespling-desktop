@@ -47,7 +47,7 @@ jobs:
         tar -czvf MyApp-macos.tar.gz MyApp.app
 
     - name: UPLOAD
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: respling-macos
         path: respling-macos.tar.gz
