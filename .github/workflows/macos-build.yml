@@ -44,7 +44,8 @@ jobs:
         cp /opt/homebrew/opt/webp/lib/libwebp.7.dylib $APP_NAME.app/Contents/Frameworks/
         export PATH="/opt/homebrew/opt/qt@6/bin:$PATH"
         export DYLD_FRAMEWORK_PATH="/opt/homebrew/opt/qt@6/lib"
-        macdeployqt $APP_NAME.app -no-sign
+        macdeployqt --help
+        macdeployqt $APP_NAME.app
 
     - name: ARCHIVE
       run: |
