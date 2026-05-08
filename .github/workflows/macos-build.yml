@@ -16,6 +16,9 @@ jobs:
     - name: CHECKOUT
       uses: actions/checkout@v4
 
+    - name: ENV 
+      run: echo "APP_NAME=respling" >> $GITHUB_ENV
+
     - name: RUST
       uses: actions-rs/toolchain@v1
       with:
@@ -25,15 +28,20 @@ jobs:
     - name: BREW
       run: |
         brew update
-        brew install qt@6
-        echo 'export PATH="/usr/local/opt/qt@6/bin:$PATH"' >> $GITHUB_ENV
-        echo 'export LDFLAGS="-L/usr/local/opt/qt@6/lib"' >> $GITHUB_ENV
-        echo 'export CPPFLAGS="-I/usr/local/opt/qt@6/include"' >> $GITHUB_ENV
-        brew install brotli webp sharpyuv
+        brew install qt@6 brotli webp cmake
+
+    - name: BUILD(sharpyuv)
+      run: |
+        git clone https://github.com/zetaboo/sharpyuv.git
+        cd sharpyuv
+        mkdir build && cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        make
+        cp libsharpyuv.dylib ../../
+      shell: bash
 
     - name: BUILD
-      run: |
-        cargo build --release
+      run: cargo build --release
 
     - name: BUNDLE
       run: |
@@ -44,14 +52,15 @@ jobs:
         mkdir -p $APP_NAME.app/Contents/Frameworks
         cp /opt/homebrew/opt/brotli/lib/libbrotlicommon.1.dylib $APP_NAME.app/Contents/Frameworks/
         cp /opt/homebrew/opt/webp/lib/libwebp.7.dylib $APP_NAME.app/Contents/Frameworks/
-        cp /opt/homebrew/opt/sharpyuv/lib/libsharpyuv.0.dylib $APP_NAME.app/Contents/Frameworks/
+        cp sharpyuv/libsharpyuv.dylib $APP_NAME.app/Contents/Frameworks/
         export PATH="/opt/homebrew/opt/qt@6/bin:$PATH"
         export DYLD_FRAMEWORK_PATH="/opt/homebrew/opt/qt@6/lib"
         macdeployqt $APP_NAME.app -no-sign
 
     - name: ARCHIVE
       run: |
-        tar -czvf MyApp-macos.tar.gz MyApp.app
+        APP_NAME="respling"
+        tar -czvf $APP_NAME-macos.tar.gz $APP_NAME.app
 
     - name: UPLOAD
       uses: actions/upload-artifact@v4
