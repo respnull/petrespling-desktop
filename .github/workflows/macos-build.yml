@@ -45,6 +45,7 @@ jobs:
         export PATH="/opt/homebrew/opt/qt@6/bin:$PATH"
         export DYLD_FRAMEWORK_PATH="/opt/homebrew/opt/qt@6/lib"
         macdeployqt $APP_NAME.app -no-codesign -qmldir=src
+        codesign --force --deep --sign - respling.app
 
     - name: ARCHIVE
       run: |
