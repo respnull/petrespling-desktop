@@ -50,8 +50,8 @@ jobs:
         macdeployqt respling.app -no-codesign -no-strip -qmldir=src
         codesign --force --deep --sign - respling.app
         codesign --verify --deep --strict --verbose=2 respling.app
-        spctl -a -vv respling.app
         xattr -rd com.apple.quarantine respling.app
+        spctl -a -vv respling.app
 
     - name: ARCHIVE
       run: |
