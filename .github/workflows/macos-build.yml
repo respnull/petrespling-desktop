@@ -45,10 +45,13 @@ jobs:
         export PATH="/opt/homebrew/opt/qt@6/bin:$PATH"
         export DYLD_FRAMEWORK_PATH="/opt/homebrew/opt/qt@6/lib"
         chmod +w respling.app/Contents/Frameworks/*.dylib
+        codesign --force --sign "-" respling.app/Contents/Frameworks/libbrotlicommon.1.dylib
+        codesign --force --sign "-" respling.app/Contents/Frameworks/libwebp.7.dylib
         macdeployqt respling.app -no-codesign -no-strip -qmldir=src
         codesign --force --deep --sign - respling.app
         codesign --verify --deep --strict --verbose=2 respling.app
         spctl -a -vv respling.app
+        xattr -rd com.apple.quarantine respling.app
 
     - name: ARCHIVE
       run: |
