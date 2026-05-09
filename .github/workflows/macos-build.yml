@@ -44,8 +44,11 @@ jobs:
         cp /opt/homebrew/opt/webp/lib/libwebp.7.dylib $APP_NAME.app/Contents/Frameworks/
         export PATH="/opt/homebrew/opt/qt@6/bin:$PATH"
         export DYLD_FRAMEWORK_PATH="/opt/homebrew/opt/qt@6/lib"
-        macdeployqt $APP_NAME.app -no-codesign -qmldir=src
+        chmod +w respling.app/Contents/Frameworks/*.dylib
+        macdeployqt respling.app -no-codesign -no-strip -qmldir=src
         codesign --force --deep --sign - respling.app
+        codesign --verify --deep --strict --verbose=2 respling.app
+        spctl -a -vv respling.app
 
     - name: ARCHIVE
       run: |
